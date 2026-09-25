@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8fafb">
+  <meta name="description" content="STELLAR: Structure-Aware Progressive Refinement for Localized Text-Guided Point Cloud Editing. Anonymous project page with supplied figures and visualizations.">
+  <title>STELLAR | Localized Point Cloud Editing</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="wordmark" href="#top" aria-label="STELLAR, back to top">STELLAR<span>.</span></a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="#introduction">Introduction</a>
+        <a href="#overview">Overview</a>
+        <a href="#workflow">Workflow</a>
+        <a href="#results">Results</a>
+        <a href="#visualizations">Visualizations</a>
+        <a href="#materials">Materials</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero page-width" id="top" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow">Anonymous project page</p>
+        <h1 id="hero-title">STELLAR</h1>
+        <p class="paper-title">Structure-Aware Progressive Refinement for Localized Text-Guided Point Cloud Editing</p>
+        <div class="hero-links">
+          <a class="button button-primary" href="#introduction">Read introduction <span aria-hidden="true">&searr;</span></a>
+          <a class="button button-secondary" href="#results">View results <span aria-hidden="true">&searr;</span></a>
+        </div>
+      </div>
+      <div class="rotation-grid" role="group" aria-label="Rotating point-cloud examples">
+        <figure class="rotation-item"><img src="assets/animations/chair.gif" width="420" height="420" alt="Rotating colored point-cloud chair"><figcaption>Chair</figcaption></figure>
+        <figure class="rotation-item"><img src="assets/animations/table.gif" width="420" height="420" alt="Rotating colored point-cloud table"><figcaption>Table</figcaption></figure>
+        <figure class="rotation-item"><img src="assets/animations/lamp.gif" width="420" height="420" alt="Rotating colored point-cloud lamp"><figcaption>Lamp</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="section section-introduction" id="introduction" aria-labelledby="introduction-title">
+      <div class="page-width section-grid">
+        <div class="section-intro"><p class="eyebrow">The problem</p><h2 id="introduction-title">Introduction</h2></div>
+        <div class="section-body intro-body">
+          <p>Localized text-guided point-cloud editing aims to modify a target part while preserving the surrounding geometry. Existing diffusion editors use text conditions to specify the desired change and part masks to identify editable coordinates. <a href="https://openaccess.thecvf.com/content/ICCV2025/papers/Sella_Blended_Point_Cloud_Diffusion_for_Localized_Text-guided_Shape_Editing_ICCV_2025_paper.pdf" target="_blank" rel="noopener">BlendedPC</a>, for example, combines editing and reconstruction trajectories through mask-based coordinate blending. However, controlling where coordinates change does not explicitly constrain the geometric relations among those coordinates.</p>
+          <p>This distinction matters for structured objects with repeated legs, bilateral supports, or rotationally arranged components. Local edits can disrupt these relations even when the protected region is retained. Uniform structural correction is also insufficient: points near attachment boundaries may require weaker intervention, and geometric deviations can occur at different spatial scales. Structural guidance must therefore account for the relation being encouraged, the location of the correction, and its geometric scale.</p>
+          <p>We propose STELLAR, a structure-aware progressive refinement framework that coordinates these three aspects within reverse diffusion. Part-conditioned symmetry projection constructs geometric targets through set-wise correspondences under category-part priors. Dynamic spatial reliability calibration weights symmetry residuals using a source-derived spatial field, reducing correction strength near protected geometry. Hierarchical geometric consistency refinement aggregates source-relative residuals across fixed spatial partitions and bounds the resulting correction. The refined clean estimate guides numerical sampling, while reconstruction-based coordinate blending supplies protected coordinates.</p>
+          <p>Our contribution is a coordinated refinement procedure linking part-level structural targets, point-wise correction strength, and multi-scale residual guidance. The framework targets edits compatible with the selected structural priors; it does not assume that symmetry or source-shape preservation is appropriate for every instruction.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-overview" id="overview" aria-labelledby="overview-title">
+      <div class="page-width section-grid">
+        <div class="section-intro"><p class="eyebrow">Figure 1</p><h2 id="overview-title">Overview</h2></div>
+        <div class="section-body">
+          <p>Given a source point cloud, a text instruction, and an editable mask, STELLAR refines editable coordinates through part-conditioned symmetry projection, dynamic spatial reliability, and hierarchical geometric consistency. Protected coordinates are preserved through the reconstruction branch and coordinate blending.</p>
+          <a class="text-link" href="assets/pdf/overview.pdf" target="_blank" rel="noopener">Open the original overview PDF <span aria-hidden="true">&nearr;</span></a>
+        </div>
+      </div>
+      <figure class="overview-figure page-width">
+        <img src="assets/figures/overview.png" width="2400" height="800" alt="STELLAR overview diagram: input point cloud and editing mask pass through the localized diffusion backbone, structural refinement, sampling, and coordinate blending." loading="lazy">
+        <figcaption>Figure 1 - STELLAR overview</figcaption>
+      </figure>
+    </section>
+
+    <section class="section" id="workflow" aria-labelledby="workflow-title">
+      <div class="page-width">
+        <div class="section-heading">
+          <div><p class="eyebrow">Figure 2</p><h2 id="workflow-title">Workflow</h2></div>
+          <a class="text-link" href="assets/pdf/workflow.pdf" target="_blank" rel="noopener">Open original PDF <span aria-hidden="true">&nearr;</span></a>
+        </div>
+        <figure class="full-figure">
+          <a href="assets/pdf/workflow.pdf" target="_blank" rel="noopener" aria-label="Open the original STELLAR workflow PDF">
+            <img src="assets/figures/workflow.png" width="2400" height="1350" alt="Detailed STELLAR workflow with three labeled modules: A, part-conditioned symmetry projection; B, dynamic spatial reliability; and C, hierarchical geometric consistency." loading="lazy">
+          </a>
+          <figcaption>At each reverse step, the editable clean estimate undergoes (A) symmetry projection, (B) spatial reliability calibration, and (C) hierarchical geometric refinement before numerical sampling. Priors, reliability weights, and source-based partitions remain fixed; correspondences and residual corrections update with the current proposal. Mask-based blending combines the edited coordinates with the protected reconstruction. Renderings and overlays are schematic, not experimental outputs.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section section-results" id="results" aria-labelledby="results-title">
+      <div class="page-width">
+        <div class="section-heading"><div><p class="eyebrow">Paper results</p><h2 id="results-title">Experimental Results</h2></div></div>
+        <div class="results-block">
+          <h3>Table 1</h3>
+          <div class="table-scroll">
+            <table class="results-table manuscript-table">
+              <caption>Quantitative evaluation on the ShapeTalk benchmark</caption>
+              <thead>
+                <tr class="group-row"><th scope="col"></th><th scope="colgroup" colspan="2">Semantic Fidelity</th><th scope="colgroup" colspan="2">Structural Fidelity</th><th scope="colgroup" colspan="2">Identity Preservation</th><th scope="colgroup" colspan="2">Distribution &amp; Category Fidelity</th></tr>
+                <tr><th scope="col">Method</th><th scope="col">CLIP Sim &uarr;</th><th scope="col">CLIP Dir &darr;</th><th scope="col">SDI-CD &darr;</th><th scope="col">LoD-CD &darr;</th><th scope="col">GD &darr;</th><th scope="col">l-GD &darr;</th><th scope="col">FPD &darr;</th><th scope="col">Class-D &darr;</th></tr>
+              </thead>
+              <tbody>
+                <tr><th scope="row">ChangeIt3D</th><td>0.21</td><td>1.02</td><td>0.7643</td><td>0.2791</td><td>0.65</td><td>0.19</td><td>183.02</td><td>0.18</td></tr>
+                <tr><th scope="row">SPICE-E</th><td>0.25</td><td>1.01</td><td>0.7842</td><td>0.2769</td><td>1.84</td><td>0.31</td><td>390.02</td><td>0.24</td></tr>
+                <tr><th scope="row">BlendedPC</th><td>0.26</td><td>0.99</td><td>0.6742</td><td>0.2688</td><td>0.34</td><td>0.07</td><td>33.64</td><td>0.05</td></tr>
+                <tr class="highlight-row"><th scope="row">STELLAR</th><td>0.2607</td><td>0.987</td><td>0.6422</td><td>0.2591</td><td>0.348</td><td>0.07</td><td>33.17</td><td>0.0497</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="table-note">As reported in the supplied manuscript. Higher is better only for CLIP Sim; lower is better for all other metrics. SDI-CD and LoD-CD follow the manuscript's unified structural evaluation protocol.</p>
+        </div>
+        <div class="results-block">
+          <h3>Table 2</h3>
+          <div class="table-scroll">
+            <table class="results-table manuscript-table ablation-table">
+              <caption>Ablation study of the STELLAR inference framework on ShapeTalk</caption>
+              <thead>
+                <tr class="group-row"><th scope="col"></th><th scope="colgroup" colspan="3">Modules</th><th scope="colgroup" colspan="2">Semantic Fidelity</th><th scope="colgroup" colspan="2">Structural Fidelity</th><th scope="colgroup" colspan="2">Identity Preservation</th><th scope="colgroup" colspan="2">Distribution &amp; Category Fidelity</th></tr>
+                <tr><th scope="col">Setting</th><th scope="col">Sym.</th><th scope="col">Rel.</th><th scope="col">HGC</th><th scope="col">CLIP Sim &uarr;</th><th scope="col">CLIP Dir &darr;</th><th scope="col">SDI-CD &darr;</th><th scope="col">LoD-CD &darr;</th><th scope="col">GD &darr;</th><th scope="col">l-GD &darr;</th><th scope="col">FPD &darr;</th><th scope="col">Class-D &darr;</th></tr>
+              </thead>
+              <tbody>
+                <tr><th scope="row">Original</th><td>&times;</td><td>&times;</td><td>&times;</td><td>0.2600</td><td>0.990</td><td>0.6742</td><td>0.2688</td><td>0.340</td><td>0.070</td><td>33.64</td><td>0.0500</td></tr>
+                <tr><th scope="row">STELLAR w/o Rel.</th><td>&check;</td><td>&times;</td><td>&check;</td><td>0.2602</td><td>0.989</td><td>0.6548</td><td>0.2637</td><td>0.343</td><td>0.071</td><td>33.42</td><td>0.0499</td></tr>
+                <tr><th scope="row">STELLAR w/o HGC</th><td>&check;</td><td>&check;</td><td>&times;</td><td>0.2604</td><td>0.988</td><td>0.6519</td><td>0.2631</td><td>0.345</td><td>0.071</td><td>33.35</td><td>0.0498</td></tr>
+                <tr><th scope="row">STELLAR w/o Sym.</th><td>&times;</td><td>&check;</td><td>&check;</td><td>0.2603</td><td>0.989</td><td>0.6635</td><td>0.2648</td><td>0.343</td><td>0.071</td><td>33.39</td><td>0.0499</td></tr>
+                <tr class="highlight-row"><th scope="row">STELLAR</th><td>&check;</td><td>&check;</td><td>&check;</td><td>0.2607</td><td>0.987</td><td>0.6422</td><td>0.2591</td><td>0.348</td><td>0.070</td><td>33.17</td><td>0.0497</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="table-note">As reported in the supplied manuscript. Sym. = part-conditioned symmetry projection; Rel. = dynamic spatial reliability calibration; HGC = hierarchical geometric consistency refinement. &check; means enabled and &times; means disabled.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-visualizations" id="visualizations" aria-labelledby="visualizations-title">
+      <div class="page-width">
+        <div class="section-heading">
+          <div><p class="eyebrow">Supplementary material</p><h2 id="visualizations-title">Visualizations</h2></div>
+          <p class="section-note">Supplied point-cloud figure sheets</p>
+        </div>
+
+        <div class="subsection-heading"><h3>Supplementary figure sheets</h3><p>Open a sheet to inspect the supplied PDF at full resolution.</p></div>
+        <div class="sheet-grid">
+          <figure class="sheet-item"><a href="assets/pdf/supplementary-1.pdf" target="_blank" rel="noopener" aria-label="Open supplementary figure sheet 1 PDF"><img src="assets/figures/supplementary-1.png" width="2000" height="1125" alt="Supplementary figure sheet 1 with point-cloud furniture renderings" loading="lazy"></a><figcaption><span>Sheet 01</span><a href="assets/pdf/supplementary-1.pdf" target="_blank" rel="noopener">View PDF &nearr;</a></figcaption></figure>
+          <figure class="sheet-item"><a href="assets/pdf/supplementary-2.pdf" target="_blank" rel="noopener" aria-label="Open supplementary figure sheet 2 PDF"><img src="assets/figures/supplementary-2.png" width="2000" height="1125" alt="Supplementary figure sheet 2 with point-cloud furniture renderings" loading="lazy"></a><figcaption><span>Sheet 02</span><a href="assets/pdf/supplementary-2.pdf" target="_blank" rel="noopener">View PDF &nearr;</a></figcaption></figure>
+          <figure class="sheet-item"><a href="assets/pdf/supplementary-3.pdf" target="_blank" rel="noopener" aria-label="Open supplementary figure sheet 3 PDF"><img src="assets/figures/supplementary-3.png" width="2000" height="1125" alt="Supplementary figure sheet 3 with point-cloud chair renderings" loading="lazy"></a><figcaption><span>Sheet 03</span><a href="assets/pdf/supplementary-3.pdf" target="_blank" rel="noopener">View PDF &nearr;</a></figcaption></figure>
+          <figure class="sheet-item"><a href="assets/pdf/supplementary-4.pdf" target="_blank" rel="noopener" aria-label="Open supplementary figure sheet 4 PDF"><img src="assets/figures/supplementary-4.png" width="2000" height="1125" alt="Supplementary figure sheet 4 with point-cloud chair renderings" loading="lazy"></a><figcaption><span>Sheet 04</span><a href="assets/pdf/supplementary-4.pdf" target="_blank" rel="noopener">View PDF &nearr;</a></figcaption></figure>
+          <figure class="sheet-item"><a href="assets/pdf/supplementary-5.pdf" target="_blank" rel="noopener" aria-label="Open supplementary figure sheet 5 PDF"><img src="assets/figures/supplementary-5.png" width="2000" height="1125" alt="Supplementary figure sheet 5 with point-cloud chair renderings" loading="lazy"></a><figcaption><span>Sheet 05</span><a href="assets/pdf/supplementary-5.pdf" target="_blank" rel="noopener">View PDF &nearr;</a></figcaption></figure>
+          <figure class="sheet-item"><a href="assets/pdf/supplementary-6.pdf" target="_blank" rel="noopener" aria-label="Open supplementary figure sheet 6 PDF"><img src="assets/figures/supplementary-6.png" width="2000" height="1125" alt="Supplementary figure sheet 6 with point-cloud lamp renderings" loading="lazy"></a><figcaption><span>Sheet 06</span><a href="assets/pdf/supplementary-6.pdf" target="_blank" rel="noopener">View PDF &nearr;</a></figcaption></figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-materials" id="materials" aria-labelledby="materials-title">
+      <div class="page-width section-grid">
+        <div class="section-intro"><p class="eyebrow">Source files</p><h2 id="materials-title">Materials</h2></div>
+        <div class="section-body">
+          <p>The diagrams, supplementary sheets, and animations above are the supplied project materials. This page does not include a manuscript PDF, code, checkpoints, or dataset files.</p>
+          <div class="materials-links">
+            <a class="text-link" href="assets/pdf/overview.pdf" target="_blank" rel="noopener">Overview PDF <span aria-hidden="true">&nearr;</span></a>
+            <a class="text-link" href="assets/pdf/workflow.pdf" target="_blank" rel="noopener">Workflow PDF <span aria-hidden="true">&nearr;</span></a>
+            <a class="text-link" href="https://github.com/stellar-research-site/stellar-research-site.github.io" target="_blank" rel="noopener">Site repository <span aria-hidden="true">&nearr;</span></a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer"><div class="page-width footer-inner"><span>STELLAR</span><span>Anonymous project page</span></div></footer>
+</body>
+</html>
